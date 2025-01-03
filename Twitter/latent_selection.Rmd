@@ -1,0 +1,179 @@
+---
+title: "Latent Factor Selection Model"
+output: html_document
+date: "2024-05-08"
+author: Shimeng Dai 
+---
+
+## Load required libraries
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(igraph)
+library(latentnet)
+library(amen)
+```
+
+## Load the required dataset
+
+```{r}
+load("tweets.RData")
+```
+
+## Three time intervals
+
+```{r}
+
+# Define peak periods
+peak_start <- ymd("2024-04-02")
+peak_end <- ymd("2024-04-10")
+
+# Divide the data into three intervals based on the peak dates
+t1 <- tweets %>% filter(created_at < peak_start)
+t2 <- tweets %>% filter(created_at >= peak_start & created_at <= peak_end)
+#t3 <- tweets %>% filter(created_at > peak_end)
+
+```
+
+## Find common users
+
+```{r}
+
+unique_from_interval1 <- unique(t1$from)
+unique_to_interval1 <- unique(t1$to)
+unique_people_interval1 <- union(unique_from_interval1, unique_to_interval1)
+
+
+unique_from_interval2 <- unique(t2$from)
+unique_to_interval2 <- unique(t2$to)
+unique_people_interval2 <- union(unique_from_interval2, unique_to_interval2)
+
+# Find the intersection of the unique lists from each interval
+common_people <- Reduce(intersect, list(unique_from_interval1, unique_people_interval1, unique_people_interval2))
+
+# Output the common people
+print(common_people)
+print(length(common_people))
+
+```
+## Obtain T1 attribute
+
+```{r, warning=FALSE}
+T1 <- t1 %>%
+  filter(from %in% common_people) %>%
+  dplyr::select(from,tweet_id, created_at,text, num) %>% # change 1
+  group_by(from) %>% 
+  summarise(total1 = sum(num)) 
+
+attribute <- T1
+```
+
+## Obtain the T1 and T2edgelists 
+
+```{r, warning=FALSE, message=FALSE}
+
+t1_edge <- t1 %>%
+  filter(from %in% common_people) %>%
+  filter(to %in% common_people) %>%
+  dplyr::select(from, to, num_b) %>%
+  group_by(from, to) %>%
+  summarise(weight = sum(num_b)) %>%
+  filter(from != to)
+
+# Generate all possible pairs of user IDs
+combinations <- expand.grid(from = common_people, to = common_people, stringsAsFactors = FALSE)
+colnames(combinations) <- c("from", "to")
+
+# Filter out self-loops (where from and to are the same)
+combinations <- subset(combinations, from != to)
+
+t1_numB_list <- merge(combinations, t1_edge, by = c("from", "to"), all.x = TRUE)
+t1_numB_list$weight[is.na(t1_numB_list$weight)] <- 0
+
+table(t1_numB_list$weight)
+```
+
+## Obtain the T1 and T2 adjacency matrices
+
+```{r}
+t2_edge <- t2 %>%
+  filter(from %in% common_people) %>%
+  filter(to %in% common_people) %>%
+  dplyr::select(from, to, num_b) %>%
+  group_by(from, to) %>%
+  summarise(weight = sum(num_b)) %>%
+  filter(from != to)
+
+# Filter out self-loops (where from and to are the same)
+combinations <- subset(combinations, from != to)
+
+t2_numB_list <- merge(combinations, t2_edge, by = c("from", "to"), all.x = TRUE)
+t2_numB_list$weight[is.na(t2_numB_list$weight)] <- 0
+
+table(t2_numB_list$weight)
+```
+
+```{r, warning=FALSE}
+
+# Create a graph from the edge list with weights and specify the vertex set
+graph <- graph_from_data_frame(d = t1_numB_list, vertices = data.frame(name = common_people), directed = TRUE)
+# Convert the igraph object to an adjacency matrix
+matnet1 <- as_adjacency_matrix(graph, attr = "weight", sparse = FALSE)
+non_zero_matnet1 <- sum(matnet1 != 0)
+print(non_zero_matnet1)
+
+
+```
+
+```{r, warning=FALSE}
+
+
+# Create a graph from the edge list with weights and specify the vertex set
+graph <- graph_from_data_frame(d = t2_numB_list, vertices = data.frame(name = common_people), directed = TRUE)
+# Convert the igraph object to an adjacency matrix
+matnet2 <- as_adjacency_matrix(graph, attr = "weight", sparse = FALSE)
+non_zero_matnet2 <- sum(matnet2 != 0)
+print(non_zero_matnet2)
+
+```
+
+## Obtain the node attribute
+
+```{r}
+nodes <- attribute
+allatt <-as.matrix(nodes[, c("total1")])
+```
+
+
+## Model with the node attribute 
+
+```{r, warning=FALSE}
+toyfit1 <-ame(matnet2, Xr=allatt, print=F, family="nrm",plot = FALSE)
+
+# diagnostic PLOT = true if you want
+summary(toyfit1)
+```
+
+## Add the T1 network (matnet1)
+
+```{r, warning = FALSE}
+toyfit2 <-ame(matnet2, Xd = matnet1, Xr=allatt, R=1, print=F, family="nrm", plot = FALSE)
+summary(toyfit2)
+```
+## Add the latent space 
+
+```{r, warning = FALSE}
+# Add one latent dimension
+toyfit2 <-ame(matnet2, Xr=allatt, R=1, print=F, family="nrm", plot = FALSE)
+summary(toyfit2)
+```
+
+
+## Add the T1 network and the latent space
+
+```{r, warning = FALSE}
+toyfit2 <-ame(matnet2, Xd = matnet1, Xr=allatt, R=1, print=F, family="nrm", plot = FALSE)
+summary(toyfit2)
+```
