@@ -1,7 +1,7 @@
 # SNA Materials
 
 
-[**Regular**](https://github.com/ShimengDai/SNA_Materials/tree/main/Regular)
+[**SNA with Toy Data**](https://github.com/ShimengDai/SNA_Materials/tree/main/Regular)
 
 - [Kliquefinder](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/basic%20kliquefinder.R)  
   
@@ -11,7 +11,7 @@
 
 - [Influence Model](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/influence.R)  
 
-[**Twitter**](https://github.com/ShimengDai/SNA_Materials/tree/main/Twitter)
+[**SNA with Twitter Data**](https://github.com/ShimengDai/SNA_Materials/tree/main/Twitter)
 
 - [Scrape Twitter Data](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Scrape%20Twitter%20Data.Rmd)  
 
