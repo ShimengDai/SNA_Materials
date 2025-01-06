@@ -3,9 +3,9 @@
 
 [**SNA with Toy Data**](https://github.com/ShimengDai/SNA_Materials/tree/main/Regular)
 
-[toyatt.csv](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/toyatt.csv) 
+\href{https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/toyatt.csv}{toyatt.csv}, 
+\href{https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/toynet.csv}{toynet.csv}
 
-[toynet.csv](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/toynet.csv) 
 
 - [Kliquefinder](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/basic%20kliquefinder.R)  
 
