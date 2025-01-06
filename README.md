@@ -4,7 +4,7 @@
 [**SNA with Toy Data**](https://github.com/ShimengDai/SNA_Materials/tree/main/Regular)
 
 
-[toyatt.csv](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/toyatt.csv), [toynet.csv](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/toynet.csv)
+[(toyatt.csv](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/toyatt.csv), [toynet.csv)](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/toynet.csv)
 
 
 
