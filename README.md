@@ -19,6 +19,8 @@
 
 - [Edgelist & Nodelist](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Edgelist_nodelist.Rmd)  
 
+- [Kliquefinder](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/basic%20kliquefinder.R)  
+
 - [Influence Model](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/The%20Influence%20Model.Rmd) 
   
 - [Latent Influence Model](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Latent_Factor_Influence.Rmd) 
