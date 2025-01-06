@@ -18,7 +18,9 @@
 - [Scrape Twitter Data](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Scrape%20Twitter%20Data.Rmd)  
 
 - [Edgelist & Nodelist](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Edgelist_nodelist.Rmd)  
+
+- [Influence Model]() 
   
-- [Latent Factor Influence Model](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Latent_Factor_Influence.Rmd)  
+- [Latent Influence Model]() 
 
-
+- [Latent Selection Model]() 
