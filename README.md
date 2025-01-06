@@ -19,7 +19,7 @@
 
 - [Edgelist & Nodelist](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Edgelist_nodelist.Rmd)  
 
-- [Kliquefinder](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/basic%20kliquefinder.R)  
+- [Kliquefinder](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Kliqfinr%20Twitter.Rmd)  
 
 - [Influence Model](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/The%20Influence%20Model.Rmd) 
   
