@@ -9,9 +9,9 @@
 
 - [Influence Model](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/influence.R)  
 
-- [Latent Influence Model]() 
+- [Latent Influence Model](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/Latent%20Influence.Rmd) 
 
-- [Latent Selection Model]() 
+- [Latent Selection Model](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/latent%20factor%20selection%20just%20code.R) 
 
 [**SNA with Twitter Data**](https://github.com/ShimengDai/SNA_Materials/tree/main/Twitter)
 
