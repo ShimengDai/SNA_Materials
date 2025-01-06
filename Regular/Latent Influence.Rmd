@@ -1,0 +1,148 @@
+---
+title: "Latent Factor Influence Model"
+author: "Shimeng Dai"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+---
+
+```{r, echo=FALSE}
+setwd("~/Desktop/Michigan State/Second semeter/Network Analysis")
+```
+
+### Set your working directory 
+
+```{r}
+# uncomment and insert your working directory
+#setwd("")
+```
+ 
+### Load necessary packages 
+
+```{r, message=FALSE, warning=FALSE}
+
+#install packages first if you haven't
+#install.packages("")
+library(RSiena)
+library(sna)
+library(statnet)
+library(latentnet)
+library(igraph)
+``` 
+
+
+### Load data
+
+```{r}
+#Read data - assuming data are in current working directory
+Toyatt <-read.csv("Toyatt.csv")
+Toynet <-read.csv("Toynet.csv")
+
+```
+
+### Change the datasets to the right formats
+
+```{r}
+
+Toynet.data <- graph.data.frame(Toynet)
+Toynet.adj <-get.adjacency(Toynet.data, sparse = FALSE, attr='weight')
+g1 <- network(as.matrix(Toynet.adj))
+Toynet.m <- as.matrix(Toynet.adj)
+
+```
+
+### Attach attributes to network
+
+```{r}
+g1%v%"attr1" <- Toyatt[,2]
+g1%v%"attr2" <- Toyatt[,3]
+g1%v%"cattr3" <- Toyatt[,4]
+```
+
+### Find latent positions
+
+```{r,warning=FALSE}
+# set.seed otherwise the plot change every time you run the code
+set.seed(57)
+m1<-ergmm(g1 ~ euclidean(d = 2)+absdiff("attr1")+absdiff("attr2")+absdiff("cattr3"),control=ergmm.control(sample.size=5000,burnin=20000,interval=10,Z.delta=5))
+plot(m1)
+```
+
+```{r}
+#Two latent positions
+m1$mkl$Z
+```
+
+#### Save the first latent position
+
+```{r}
+latent_pos1<-rep(m1$mkl$Z[,1],2)
+latent_pos1
+```
+
+
+
+#### Save the second latent position
+
+```{r}
+latent_pos2<-rep(m1$mkl$Z[,2],2)
+latent_pos2
+
+```
+
+#### Calculate the exposure term
+
+```{r}
+E<-matrix(0,6,3)
+for (i in 1:6)
+{    #making exposure term
+  if (sum(Toynet.m[i,])!=0)
+    E[i,1]<-(Toynet.m[i,]%*%Toyatt[,2])/sum(Toynet.m[i,])
+  if (sum(Toynet.m[i,])!=0)
+    E[i,2]<-(Toynet.m[i,]%*%Toyatt[,3])/sum(Toynet.m[i,])
+}
+```
+
+#### Format variables
+
+```{r}
+att_1_2<-c(Toyatt[,2],Toyatt[,3])
+expo<-c(E[,2],E[,1])
+cattr3 <-rep(Toyatt[,4],2)
+```
+
+#### Combine variables
+
+```{r}
+infl<-data.frame(cbind(latent_pos1, latent_pos2, att_1_2, cattr3, expo, rep(c(1:6),2),rep(c(1:2),each=6)))
+```
+
+### Model 1   (predictor: exposure term) 
+
+```{r}
+summary(lm(att_1_2~expo ,data=infl))
+
+```
+
+### Model 2   (predictors: exposure term and latent position 1)
+
+```{r}
+summary(lm(att_1_2~expo+latent_pos1,data=infl))
+```
+
+### Model 3   (predictors: exposure term, latent position 1 and 2)
+
+```{r}
+summary(lm(att_1_2~expo + latent_pos1 + latent_pos2,data=infl))
+```
+
+### Model 4   (predictors: exposure term, latent position 1, 2, and categorical variable)
+
+```{r}
+summary(lm(att_1_2~expo + latent_pos1 + latent_pos2 + cattr3 ,data=infl))
+
+```
