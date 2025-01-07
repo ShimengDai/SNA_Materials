@@ -13,9 +13,9 @@
 
 - [Latent Selection Model](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/latent%20factor%20selection%20just%20code.R) 
 
-- [Influence Model (SPSS)](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/latent%20factor%20selection%20just%20code.R) 
+- [Influence Model (SPSS)](https://github.com/ShimengDai/SNA_Materials/tree/main/SPSS) 
 
-- [Influence Model (Strata)](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/latent%20factor%20selection%20just%20code.R) 
+- [Influence Model (Strata)](https://github.com/ShimengDai/SNA_Materials/tree/main/stata) 
 
 
 
