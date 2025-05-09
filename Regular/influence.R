@@ -20,7 +20,7 @@ install.packages("dplyr")
 library(dplyr) # need to install with 
 #if not already installed (just need to do first time)
 
-data1 <- data.frame(nominator = c(2, 1, 3, 1, 2, 6, 3, 5, 6, 4, 3, 4), 
+data1 <- data.frame(nominator = c(2, 1, 3, 1, 2, 6, 3, 5, 6, 4, 3, 4), # cccc
                     nominee = c(1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 6, 6), 
                     relate = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
 data1
@@ -381,3 +381,4 @@ par(mfrow = c(1,2))#change your view to compare networks
 plot(Sample_Edgelist_Network,displaylabels=T)
 plot(one_mode_projection_rows,displaylabels=T)
 plot(one_mode_projection_columns,displaylabels=T)
+
