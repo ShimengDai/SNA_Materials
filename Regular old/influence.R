@@ -1,8 +1,9 @@
 # This Introduction to R script was adapted from Ken Franks code
 
-# Jordan Tait
+# Adapted by Shimeng Dai (2025)
+# Based on original script by Ken Frank and Jordan Tait
 # Measurement and Quantitative Methods | Michigan State University
-# 2021
+
 
 ###########################################################
 ###########################################################
@@ -15,12 +16,12 @@
 # 2.1 influence.R
 ###########################################################
 
-#only need to do this once:
-install.packages("dplyr")
+
+#install.packages("dplyr") #only need to do this once:
 library(dplyr) # need to install with 
 #if not already installed (just need to do first time)
 
-data1 <- data.frame(nominator = c(2, 1, 3, 1, 2, 6, 3, 5, 6, 4, 3, 4), # cccc
+data1 <- data.frame(nominator = c(2, 1, 3, 1, 2, 6, 3, 5, 6, 4, 3, 4), 
                     nominee = c(1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 6, 6), 
                     relate = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
 data1
