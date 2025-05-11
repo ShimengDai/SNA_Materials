@@ -35,6 +35,6 @@
 - [Latent Selection Model](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/latent_selection.Rmd) 
 
 
-[**Miscellaneous**]
+**Miscellaneous**
 
 - [Introduction to R](https://github.com/ShimengDai/SNA_Materials/tree/main/Intro%20to%20R) 
