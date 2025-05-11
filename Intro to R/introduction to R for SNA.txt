@@ -1,0 +1,135 @@
+source("https://github.com/JeffreyAlanSmith/Integrated_Network_Science/raw/master/R/setup.R")
+library(network)
+help(package = network)
+# see: https://inarwhal.github.io/NetworkAnalysisR-book/ch3-Cross-Sectional-Network-Data-R.htm
+url1 <- "https://github.com/JeffreyAlanSmith/Integrated_Network_Science/raw/master/data/class555_matrix.csv"
+
+class_mat <- read.csv(file = url1)
+class(class_mat)
+class_mat <- as.matrix(class_mat)
+rownames(class_mat) <- 1:nrow(class_mat)
+colnames(class_mat) <- 1:ncol(class_mat)
+class_mat
+
+url2 <- "https://github.com/JeffreyAlanSmith/Integrated_Network_Science/raw/master/data/class555_attributedata.csv"
+
+class_attributes <- read.csv(file = url2, stringsAsFactors = T)
+class_attributes
+class_attributes$gender[1:5]
+class_attributes[1:5, "gender"] 
+library(igraph)
+
+class_netbymatrix <- graph_from_adjacency_matrix(adjmatrix = class_mat,
+                                                 mode = "directed")
+class_netbymatrix                                                 
+
+class_netbymatrix <- set_vertex_attr(graph = class_netbymatrix, 
+                                     name = "gender", 
+                                     value = class_attributes$gender)
+class_netbymatrix <- set_vertex_attr(graph = class_netbymatrix, 
+                                     name = "grade",
+                                     value = class_attributes$grade)
+class_netbymatrix <- set_vertex_attr(graph = class_netbymatrix, 
+                                     name = "race",
+                                     value = class_attributes$race)
+class_netbymatrix
+
+# from edgelist
+url3 <- "https://github.com/JeffreyAlanSmith/Integrated_Network_Science/raw/master/data/class555_edgelist.csv"
+
+class_edges <- read.csv(file = url3)
+
+head(class_edges) 
+
+class_netbyedgelist <- graph_from_data_frame(d = class_edges, directed = T)
+class_netbyedgelist
+
+class_attributes
+class_netbyedgelist <- graph_from_data_frame(d = class_edges, directed = T,
+                                         vertices = class_attributes)
+
+V(class_netbyedgelist)$race
+
+shapes<-V(class_netbyedgelist)$shape<-ifelse(V(class_netbyedgelist)$gender == "Male", "circle", "square")
+colors<-ifelse(V(class_netbyedgelist)$grade == 12, "red", 
+               ifelse(V(class_netbyedgelist)$grade == 11, "blue", "green"))
+frame.colors <- ifelse(V(class_netbyedgelist)$race == "Black", "black", "gray")
+
+plot(class_netbymatrix, edge.arrow.size=0.05,
+     vertex.label=V(class_netbyedgelist)$name,
+     edge.width= 1,
+     #edge.curved=0.1,
+     vertex.size=V(class_netbyedgelist)$grade,
+     layout=layout_with_fr,
+     vertex.label.cex =1,
+     vertex.shape= shapes,
+     vertex.color= colors,
+     vertex.frame.color=frame.colors,
+     vertex.frame.width=3)
+
+
+# end here
+
+weights <- edge_attr(graph = class_netbyedgelist, name = "weight")
+
+class_edges_temp <- as_edgelist(graph = class_netbyedgelist, names = F)
+
+library(intergraph)
+
+network_from_igraph <- asNetwork(class_netbyedgelist)
+
+network_from_igraph
+
+outdeg <- rowSums(class_mat) 
+outdeg
+
+indeg <- colSums(class_mat)
+indeg
+
+library(igraph)
+
+outdeg_igraph <- degree(graph = class_netbyedgelist, mode = "out")
+indeg_igraph <- degree(graph = class_netbyedgelist, mode = "in")
+
+table(outdeg == outdeg_igraph) 
+
+num_edges <- gsize(class_netbyedgelist)
+num_edges
+
+num_nodes <- gorder(class_netbyedgelist)
+num_nodes
+
+number_dyads <- (num_nodes * (num_nodes - 1))
+
+den <- num_edges / number_dyads
+den
+edge_density(class_netbyedgelist)
+
+dist_mat <- distances(graph = class_netbyedgelist, mode = "out")
+dist_mat
+
+all_shortest_paths(class_netbyedgelist, from = 1, to = 6) 
+
+diag(dist_mat) <-  NA
+mean(dist_mat, na.rm = T)
+mean(dist_mat[dist_mat != Inf], na.rm = T) 
+close_mat <- 1 / dist_mat
+close_mat[1:10, 1:10]
+
+# longitudinal data
+library(network)
+library(sna)
+install.packages("networkDynamic")
+install.packages("tsna")
+library(networkDynamic)
+library(tsna)
+
+url1 <- "https://github.com/JeffreyAlanSmith/Integrated_Network_Science/raw/master/data/class237_sem1_edgelist.txt"
+
+sem1_edgelist <- read.table(file = url1, header = T, colClasses = "character")
+
+url2 <- "https://github.com/JeffreyAlanSmith/Integrated_Network_Science/raw/master/data/class237_sem1_attributes.txt"
+
+sem1_attributes <- read.table(file = url2,  header = T)
+
+sem1_attributes[, c("ids", "sem_id", "expected_grade", "like_subject")]
