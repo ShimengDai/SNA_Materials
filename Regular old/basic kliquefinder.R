@@ -8,9 +8,9 @@
 # If you have trouble installing kliqfinder below, use the Github links below to troubleshoot
 # https://github.com/jtbates/kliqfindr
 # https://github.com/r-lib/devtools
-install.packages('devtools')
-install.packages("readr")
-install.packages("igraph")
+#install.packages('devtools')
+#install.packages("readr")
+#install.packages("igraph")
 devtools::install_github("jtbates/kliqfindr")
 
 
