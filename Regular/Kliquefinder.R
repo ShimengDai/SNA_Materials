@@ -1,0 +1,133 @@
+# Code adapted from Ken Franks code
+
+# Input file : CSV edgelist
+# Format:  Sender | Receiver | Edge weight
+
+
+# If you have trouble installing kliqfinder below, use the Github links below to troubleshoot
+# https://github.com/jtbates/kliqfindr
+# https://github.com/r-lib/devtools
+#install.packages('devtools')
+#install.packages("readr")
+#install.packages("igraph")
+#devtools::install_github("jtbates/kliqfindr")
+
+
+# Once packages have been installed
+# this loads them into R
+library(kliqfindr) # used to run Subgroup analysis
+library(readr) # used to write list files needed for kliqfinder
+library(igraph) # used to graph networks
+
+
+
+# Set working directory of CSV edgelist
+setwd("C:/Users/daishime/Desktop/SNA")
+
+# Name of CSV edgelist file
+# REQUIRED Format: sender | receiver | edge_weight
+filename<-"toynet"
+
+# Add "CSV" suffix to filename
+file<-paste(filename,".csv",sep="")
+
+# Read in the CSV edgelist
+ties <- read.csv(file, header=T, as.is=T)
+ties
+
+# Writes list file version of edge list
+# This is REQUIRED for kliqfinder
+filelist<-paste(filename,".list",sep="")
+write_delim(ties,filelist,delim=" ",col_names=FALSE)
+
+
+# add your list file to your working directory
+subgroups <- winkliq_run(filelist)
+subgroups
+#subgroups$output_dir contains the information about the clusters output 
+#including the p-value
+
+groupbykf.file<-list.files(path=gsub("\\\\", "/", subgroups[["output_dir"]]),
+                           full.name=T) 
+groupbykf.file
+
+# Save subgroup analysis results to a dataframe called "KFresults"
+KFresults<-subgroups$place[,c("actor", "subgroup")]
+
+# Previews first 5 rows of results
+head(KFresults)
+
+## kfresults contains cluster information based on kliqfinder algorithm 
+## kfresults is sorted by node id 
+
+
+# Creates Network called "ToyNetwork" from edgelist
+Toynetwork <- graph_from_data_frame(d=ties,directed=T)
+
+
+#Makes variable for each vertex called "subgroup" using the subgroup results, matchign by ID
+V(Toynetwork)$subgroup<-KFresults$subgroup[match(V(Toynetwork)$name,KFresults$actor)]
+
+
+set.seed(1)
+#windows()
+#par(mar=c(0,0,0,0)+0.1)
+plot(Toynetwork, edge.arrow.size=0.05,
+     vertex.label=V(Toynetwork)$node,
+     edge.width= 1,
+     #edge.curved=0.1,
+     vertex.size=10,
+     layout=layout_with_fr,
+     vertex.label.cex = 1)
+
+
+set.seed(1)
+#windows()
+#par(mar=c(0,0,0,0)+0.1)
+plot(Toynetwork, edge.arrow.size=0.05,
+     vertex.color=V(Toynetwork)$subgroup+1,  # the "+1" turns 0/1's into 1/2's. Two groups = Two colors
+     vertex.label=V(Toynetwork)$node,
+     edge.width= 1,
+     #edge.curved=0.1,
+     vertex.size=10,
+     layout=layout_with_fr,
+     vertex.label.cex = 1)
+
+
+
+# Extract the path to the output files
+groupbykf.file <- list.files(path = gsub("\\\\", "/", subgroups[["output_dir"]]),
+                             full.name = TRUE)
+
+# Identify the .clusters file
+clusters_file <- groupbykf.file[grep(paste0(filename, ".clusters"), groupbykf.file)]
+
+# Check if file exists and extract p-value from it
+if (length(clusters_file) == 1 && file.exists(clusters_file)) {
+  clusters_content <- readLines(clusters_file)
+  
+  # Look for the line with headers
+  header_line_index <- grep("PROCESSES\\|\\s+LRT\\s+\\|\\s+P-VALUE", clusters_content)
+  
+  if (length(header_line_index) > 0) {
+    data_line <- clusters_content[header_line_index + 1]  # Get line with actual values
+    data_parts <- unlist(strsplit(trimws(data_line), "\\s+"))  # Split values
+    
+    # Extract the p-value (3rd value)
+    p_value <- as.numeric(data_parts[3])
+    cat("P-value from KliqFinder's test of subgroup structure:\n")
+    print(p_value)
+    if (p_value < 0.05) {
+      cat("Result: There is significant evidence of subgroup structure (reject null).\n")
+    } else {
+      cat("Result: No significant evidence of subgroup structure (fail to reject null).\n")
+    }
+  } else {
+    warning("Header line not found in .clusters file.")
+  }
+} else {
+  warning(".clusters file not found. Make sure KliqFinder completed successfully.")
+}
+
+
+
