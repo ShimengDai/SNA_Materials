@@ -11,17 +11,17 @@ output:
 ---
 
 ```{r, echo=FALSE}
-setwd("~/Desktop/Michigan State/Second semeter/Network Analysis")
+setwd("/Users/shimengdai/Dropbox/Michigan State/Github/SNA_Materials/Regular")
 ```
 
-### Set your working directory 
+# Set your working directory 
 
 ```{r}
 # uncomment and insert your working directory
 #setwd("")
 ```
  
-### Load necessary packages 
+# Load necessary packages 
 
 ```{r, message=FALSE, warning=FALSE}
 
@@ -35,7 +35,7 @@ library(igraph)
 ``` 
 
 
-### Load data
+# Load data
 
 ```{r}
 #Read data - assuming data are in current working directory
@@ -44,7 +44,7 @@ Toynet <-read.csv("Toynet.csv")
 
 ```
 
-### Change the datasets to the right formats
+# Change the datasets to the right formats
 
 ```{r}
 
@@ -55,7 +55,7 @@ Toynet.m <- as.matrix(Toynet.adj)
 
 ```
 
-### Attach attributes to network
+# Attach attributes to network
 
 ```{r}
 g1%v%"attr1" <- Toyatt[,2]
@@ -63,7 +63,7 @@ g1%v%"attr2" <- Toyatt[,3]
 g1%v%"cattr3" <- Toyatt[,4]
 ```
 
-### Find latent positions
+# Find latent positions
 
 ```{r,warning=FALSE}
 # set.seed otherwise the plot change every time you run the code
@@ -77,7 +77,7 @@ plot(m1)
 m1$mkl$Z
 ```
 
-#### Save the first latent position
+## Save the first latent position
 
 ```{r}
 latent_pos1<-rep(m1$mkl$Z[,1],2)
@@ -86,7 +86,7 @@ latent_pos1
 
 
 
-#### Save the second latent position
+## Save the second latent position
 
 ```{r}
 latent_pos2<-rep(m1$mkl$Z[,2],2)
@@ -94,7 +94,7 @@ latent_pos2
 
 ```
 
-#### Calculate the exposure term
+## Calculate the exposure term
 
 ```{r}
 E<-matrix(0,6,3)
@@ -107,7 +107,7 @@ for (i in 1:6)
 }
 ```
 
-#### Format variables
+## Format variables
 
 ```{r}
 att_1_2<-c(Toyatt[,2],Toyatt[,3])
@@ -115,32 +115,32 @@ expo<-c(E[,2],E[,1])
 cattr3 <-rep(Toyatt[,4],2)
 ```
 
-#### Combine variables
+## Combine variables
 
 ```{r}
 infl<-data.frame(cbind(latent_pos1, latent_pos2, att_1_2, cattr3, expo, rep(c(1:6),2),rep(c(1:2),each=6)))
 ```
 
-### Model 1   (predictor: exposure term) 
+# Model 1   (predictor: exposure term) 
 
 ```{r}
 summary(lm(att_1_2~expo ,data=infl))
 
 ```
 
-### Model 2   (predictors: exposure term and latent position 1)
+# Model 2   (predictors: exposure term and latent position 1)
 
 ```{r}
 summary(lm(att_1_2~expo+latent_pos1,data=infl))
 ```
 
-### Model 3   (predictors: exposure term, latent position 1 and 2)
+# Model 3   (predictors: exposure term, latent position 1 and 2)
 
 ```{r}
 summary(lm(att_1_2~expo + latent_pos1 + latent_pos2,data=infl))
 ```
 
-### Model 4   (predictors: exposure term, latent position 1, 2, and categorical variable)
+# Model 4   (predictors: exposure term, latent position 1, 2, and categorical variable)
 
 ```{r}
 summary(lm(att_1_2~expo + latent_pos1 + latent_pos2 + cattr3 ,data=infl))
