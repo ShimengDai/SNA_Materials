@@ -25,33 +25,38 @@ setwd("/Users/shimengdai/Dropbox/Michigan State/Github/SNA_Materials/Regular")
 
 ```{r, message=FALSE, warning=FALSE}
 
-#install packages first if you haven't
-#install.packages("")
-library(RSiena)
-library(sna)
-library(statnet)
-library(latentnet)
-library(igraph)
+# Install required packages if not already installed
+# install.packages("RSiena")
+# install.packages("sna")
+# install.packages("statnet")
+# install.packages("latentnet")
+# install.packages("igraph")
+
+library(RSiena)      # For stochastic actor-oriented models
+library(sna)         # Tools for social network analysis
+library(statnet)     # Suite of network analysis tools
+library(latentnet)   # For latent space network models
+library(igraph)      # General network analysis
+
 ``` 
 
 
 # Load data
 
 ```{r}
-#Read data - assuming data are in current working directory
-Toyatt <-read.csv("Toyatt.csv")
-Toynet <-read.csv("Toynet.csv")
-
+Toyatt <- read.csv("Toyatt.csv")  # Node attributes
+Toynet <- read.csv("Toynet.csv")  # Edge list
 ```
 
 # Change the datasets to the right formats
 
 ```{r}
 
-Toynet.data <- graph.data.frame(Toynet)
-Toynet.adj <-get.adjacency(Toynet.data, sparse = FALSE, attr='weight')
-g1 <- network(as.matrix(Toynet.adj))
-Toynet.m <- as.matrix(Toynet.adj)
+Toynet.data <- graph.data.frame(Toynet)                        # Create igraph object from edge list
+Toynet.adj <- get.adjacency(Toynet.data, sparse = FALSE, attr='weight')  # Create adjacency matrix
+g1 <- network(as.matrix(Toynet.adj))                           # Convert adjacency matrix to network object (statnet)
+Toynet.m <- as.matrix(Toynet.adj)                              # Save adjacency matrix for later calculations
+
 
 ```
 
