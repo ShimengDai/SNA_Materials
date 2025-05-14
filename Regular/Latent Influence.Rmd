@@ -144,5 +144,4 @@ summary(lm(att_1_2~expo + latent_pos1 + latent_pos2,data=infl))
 
 ```{r}
 summary(lm(att_1_2~expo + latent_pos1 + latent_pos2 + cattr3 ,data=infl))
-
 ```

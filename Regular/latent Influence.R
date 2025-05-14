@@ -1,110 +1,61 @@
-#install.packages("amen")
-# https://www.rdocumentation.org/packages/amen/versions/1.4.5/topics/ame
-library(amen) # Analysis of network and relational data using additive and multiplicative effects (AME) models
-#install.packages("igraph")
+
+#install packages first if you haven't
+#install.packages("")
+library(RSiena)
+library(sna)
+library(statnet)
+library(latentnet)
 library(igraph)
-setwd("/Users/shimengdai/Dropbox/Michigan State/Github/SNA_Materials/Regular old")
 
-# Load edge list: each row is sendr, receiver, and weight
-edgelist <- read.csv("toynet.csv", header=T, as.is=T)
-head(edgelist, n = 3) # sender receiver weight 
+#Read data - assuming data are in current working directory
+Toyatt <-read.csv("Toyatt.csv")
+Toynet <-read.csv("Toynet.csv")
 
-# Convert edge list to adjacency matrix
-matnet <-as.matrix(get.adjacency(graph.data.frame(edgelist)))
-matnet
+Toynet.data <- graph.data.frame(Toynet)
+Toynet.adj <-get.adjacency(Toynet.data, sparse = FALSE, attr='weight')
+g1 <- network(as.matrix(Toynet.adj))
+Toynet.m <- as.matrix(Toynet.adj)
 
-# Load node attributes
-nodes <- read.csv("toyatt.csv", header=T, as.is=T)
-head(nodes,n = 3)
-nodeatt <-as.matrix(nodes)
-nodeatt
+g1%v%"attr1" <- Toyatt[,2]
+g1%v%"attr2" <- Toyatt[,3]
+g1%v%"cattr3" <- Toyatt[,4]
 
-# Initialize attribute matrix for AME model
-allatt<-matrix(nrow=6,ncol=2)
-allatt
+set.seed(57)
+m1<-ergmm(g1 ~ euclidean(d = 2)+absdiff("attr1")+absdiff("attr2")+absdiff("cattr3"),control=ergmm.control(sample.size=5000,burnin=20000,interval=10,Z.delta=5))
+plot(m1)
 
-allatt[,1]<-nodeatt[,2] # First attribute
-allatt
+#Two latent positions
+m1$mkl$Z
 
-allatt[,2]<-nodeatt[,3] # Second attribute
-allatt
+latent_pos1<-rep(m1$mkl$Z[,1],2)
+latent_pos1
 
-colnames(allatt)<- c("attr1", "attr2")
-allatt
+latent_pos2<-rep(m1$mkl$Z[,2],2)
+latent_pos2
 
-# Fit AME model using both attributes
-toyfit1 <-ame(matnet, Xr=allatt, print=F, family="nrm")
-# Xr: Matrix of row (sender) covariates (n × p), describing characteristics of the sender.
-# family: Type of data: "nrm" (normal), "bin" (binary), "ord" (ordinal), "frn" (fixed rank nomination), "cbin" (censored binary), or "rrl" (relative rank likelihood).
-summary(toyfit1)
+E<-matrix(0,6,3)
+for (i in 1:6)
+{    #making exposure term
+  if (sum(Toynet.m[i,])!=0)
+    E[i,1]<-(Toynet.m[i,]%*%Toyatt[,2])/sum(Toynet.m[i,])
+  if (sum(Toynet.m[i,])!=0)
+    E[i,2]<-(Toynet.m[i,]%*%Toyatt[,3])/sum(Toynet.m[i,])
+}
 
-# Extract attribute 1
-attr1 <- c(allatt[,1])
-attr1
+att_1_2<-c(Toyatt[,2],Toyatt[,3])
+expo<-c(E[,2],E[,1])
+cattr3 <-rep(Toyatt[,4],2)
 
-names(attr1)[1] <- "attr1"
-attr1
-?ame
-#estimate a new model with only attribute 1
-toyfit2 <-ame(matnet, Xr=attr1, rvar=F, cvar=F, print=F, family="nrm")
-# rvar/ Logical: include random effects for row heterogeneity? (TRUE = yes)
-# cvar/ Logical: allow for within-dyad correlation (i.e., reciprocity)
-summary(toyfit2)
+infl<-data.frame(cbind(latent_pos1, latent_pos2, att_1_2, cattr3, expo, rep(c(1:6),2),rep(c(1:2),each=6)))
 
-# Compute dyadic covariate: absolute differences (Manhattan distance) in attr1
-abattr1 <- as.matrix(dist(attr1, method = "manhattan"))
-abattr1
+# model1
+summary(lm(att_1_2~expo ,data=infl))
 
-# Extract and compute distance matrix for a third attribute
-attr3 <-nodeatt[,4]
-attr3
-abattr3 <- as.matrix(dist(attr3, method = "manhattan"))
-abattr3
+# model2
+summary(lm(att_1_2~expo+latent_pos1,data=infl))
 
-# Fit model with dyadic covariate abattr1
-toyfit3 <-ame(matnet, Xd=abattr1, print=F, family="nrm")
-# Xd: 3D array of dyadic covariates (n × n × p), where each slice is a matrix of values describing pairs. 
-summary(toyfit3)
+# model3
+summary(lm(att_1_2~expo + latent_pos1 + latent_pos2,data=infl))
 
-# Format attr3 properly and recompute dyadic matrix
-cattr3 <- c(nodeatt[,4])
-abattr3 <- as.matrix(dist(cattr3, method = "manhattan"))
-abattr3
-
-# Use abattr3 in model as dyadic covariate
-toyfit4 <-ame(matnet, Xd=abattr3, print=F, family="nrm")
-summary(toyfit4)
-
-# Create cross-product matrix for interactions
-diffat1<--tcrossprod(attr1)
-diffat1
-
-# Extract second attribute
-attr2 <- c(allatt[,2])
-attr2
-
-names(attr2)[1] <- "attr2"
-attr2
-
-# use cross product in a model, as well as Xc is column (receiver, nominee)
-toyfit5.a <-ame(matnet, Xd=diffat1, Xr=attr1, Xc=attr2, print=F, family="nrm")
-# Xc: Matrix of column (receiver) covariates (n × p), describing characteristics of the receiver. Often same as Xr
-summary(toyfit5.a)
-
-toyfit5.b <-ame(matnet, Xd=diffat1, Xr=attr1, Xc=attr1, print=F,family="nrm")
-summary(toyfit5.b)
-
-toyfit6 <-ame(matnet, Xd=abattr1, Xr=attr1, Xc=attr2, print=F, family="nrm")
-
-summary(toyfit6)
-
-# Fit model with latent factors R = 1 and R = 2
-# Rank (number) of latent factors for multiplicative effects. R=0 disables latent factors; R=2 is common.
-toyfit61.a <-ame(matnet, Xd=abattr1, Xr=attr1, Xc=attr2, R=1, print=F, family="nrm")
-summary(toyfit61.a)
-
-toyfit6.b <-ame(matnet, Xd=abattr1, Xr=attr1, Xc=attr2, R=2, print=F, family="nrm")
-summary(toyfit6.b)
-
-toyfit7_exercise <-ame(matnet, Xr=attr1, rvar=F, cvar=F, print=F, family="nrm")
-summary(toyfit7_exercise)
+# model4
+summary(lm(att_1_2~expo + latent_pos1 + latent_pos2 + cattr3 ,data=infl))
