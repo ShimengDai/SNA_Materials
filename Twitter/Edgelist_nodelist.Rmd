@@ -45,6 +45,9 @@ Interaction information is extracted from the Tweet data and restructured into
 an edgelist.
 
 ```{r edges}
+setwd("/Users/shimengdai/Dropbox/Michigan State/Eighth semester/SNA_Materials/2024 SNA workshop/developer")
+
+load("all_tweets.RData")
 
 edgelist <- all_tweets %>% # If you have a dataset with a different name, be sure to replace all_tweets to your dataset name
   unnest(entities) %>%
