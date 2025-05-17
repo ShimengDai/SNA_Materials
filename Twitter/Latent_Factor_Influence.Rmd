@@ -16,6 +16,8 @@ library(latentnet)
 ## Load the required dataset
 
 ```{r}
+setwd("/Users/shimengdai/Dropbox/Michigan State/Eighth semester/SNA_Materials/2024 SNA workshop/data")
+
 load("tweets.RData")
 ```
 
