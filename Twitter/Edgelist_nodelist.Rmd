@@ -45,7 +45,7 @@ Interaction information is extracted from the Tweet data and restructured into
 an edgelist.
 
 ```{r edges}
-setwd("/Users/shimengdai/Dropbox/Michigan State/Eighth semester/SNA_Materials/2024 SNA workshop/developer")
+setwd("/Users/shimengdai/Dropbox/Michigan State/Eighth semester/SNA_Materials/2024 SNA workshop/data")
 
 load("all_tweets.RData")
 
