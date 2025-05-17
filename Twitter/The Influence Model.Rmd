@@ -33,18 +33,12 @@ library(RColorBrewer)
 
 # Time frame of the data: from late January to late April
 
-setwd("C:/Users/kenfrank/Dropbox/CEP 991/R tutorial materials/updated materials")
+setwd("/Users/shimengdai/Dropbox/Michigan State/Eighth semester/SNA_Materials/2024 SNA workshop/data")
 
 # Twitter network data
 load("edgelist.RData")
 df <- edgelist
-df
-head(df, n = 5)
 
-
-```
-
-```{r}
 # Dictionary data 
 # Use to identify if a tweet contains specific words
 # You need to identify your own dictionary data for your specific topic
@@ -200,7 +194,7 @@ head(tweets, n = 5)
 
 ## Save tweets as R data
 
-```{}
+```{r}
 save(tweets,file = "tweets.RData")
 ```
 
@@ -284,7 +278,7 @@ t3 <- t3 %>% filter(from %in% common_people)
 
 ## Save edgelist from t1 for KliqueFinder
 
-```{}
+```{r}
 
 t1_num_b <- t1 %>%
   dplyr::select(from, to, num_b) %>%
@@ -311,7 +305,7 @@ table(t2_num_b$weight)
 
 ```
 
-```{}
+```{r}
 save(t2_num_b, file = "t2edge.RData")
 ```
 
@@ -332,14 +326,14 @@ table(t2_numB_list$weight)
 
 ```
 
-```{}
+```{r}
 save(t2_numB_list, file = "t2edge_full.RData")
 ```
 
 
 ## Save tweets
 
-```{}
+```{r}
 save(tweets,file = "tweets.RData")
 write.csv(tweets, "tweets.csv")
 ```
