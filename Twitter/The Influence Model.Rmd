@@ -26,15 +26,12 @@ library(RColorBrewer)
 
 ## Load required datasets (tweets and keywords)
 
-
 ```{r}
-
 # The data was scraped using the following keywords:
-
 # query = "((graduate OR grad) 
                     # (student OR assistant OR worker) 
                     # (union OR unionization OR wages OR healthcare OR NLRB OR labor OR contract OR strike) 
-                    # (-isreal)) # if you want to remove tweets contain Isreal
+                    # (-XX)) # if you want to remove tweets contain XX
          # (is:retweet OR is:reply OR is:quote OR has:mentions)
          # lang:en"
 
@@ -53,62 +50,6 @@ word <- read.csv("Dictionary.csv")
 word <- as.data.frame(word)
 head(word, n = 5)
 ```
-
-
-## Remove irrelevant tweets
-
-```{r}
-
-# Preprocess the text: convert to lowercase and remove punctuation
-df$text_cleaned <- tolower(df$text)
-df$text_cleaned <- str_replace_all(df$text_cleaned, "[[:punct:]]", "") # removes punctuation
-
-# Define and preprocess the strings to remove
-# Incude tweets that you would like to remove from the dataset
-
-raw_strings_to_remove <- c(
-  "I'm proud to bring Dr. Intimaa Salama, a Palestinian graduate student at @SLU_Official and dentist, as my guest to the State",
-  "Since Oct. 7, the IDF has killed more than 30,000 Palestinians. This includes 35 of Dr. Intimaa Salama‚Äôs family members",
-  "Rep. Cori Bush, who has been outspoken in her criticism of Israel‚Äôs actions in Gaza, has invited a Palestinian graduate",
-  "Israeli forces just invaded Ramallah it is almost 4:00 AM local.
-They arrested a graduate student Layan Kayed and sho",
-"I was very disappointed that the Harvard Law Student Government endorsed divesting in Israel",
-"As they purport to champion freedom of expression on campus, Harvard anti-Israel protesters (including the BDS caucus of",
-"As they purport to champion freedom of expression on campus, Harvard anti-Israel protesters",
-"that's my school! my grad student labor is directly funding investments in israeli currency",
-"This is absolutely nothing compared with what is being inflicted upon the people of Gaza",
-"Breaking: The ‚ÄúResolution affirming the need for a permanent ceasefire in Gaza and ceasing MIT labor support for Isr",
-"UAW graduate students at the University of Southern California joined the walkout for Palestine during their picket line",
-"Cori Bush's guest to the State of the Union tonight is a Palestinian dental student from her district who has lost dozens",
-"a Palestinian grad student who lost 35 family members in Gaza"
-)
-
-strings_to_remove <- sapply(raw_strings_to_remove, function(x) {
-  x <- tolower(x)
-  str_replace_all(x, "[[:punct:]]", "") # more consistent punctuation removal
-})
-
-# Debug print to verify strings are processed as expected
-print(head(strings_to_remove, 2))
-
-# Filter the data by checking for non-presence of each string to remove
-for (string in strings_to_remove) {
-  df <- df[!grepl(pattern = string, df$text_cleaned, fixed = TRUE), ]
-}
-
-# Check the resulting filtered data
-head(df, 5)
-
-```
-
-
-```{r}
-nrow(edgelist) # Original sample size
-nrow(df) # After removing irrelevant tweets
-nrow(edgelist) - nrow(df) # The number of tweets removed
-```
-
-
 
 ## Plot the tweet frequency over time 
 ## Divide the time period into three time intervals
@@ -205,44 +146,9 @@ head(tweets, n = 5)
 save(tweets,file = "tweets.RData")
 ```
 
-## Plot the distribution of relevant and irrelevant tweets
-
-
-```{r}
-# Assuming tweets$num_b contains the relevant and irrelevant tweet codes
-code_counts <- table(tweets$num_b)
-
-# Plot the bar chart
-bar_positions <- barplot(code_counts,
-  main = "The Histogram of Word Use",
-  xlab = "Code",
-  ylab = "Frequency",
-  col = brewer.pal(n = 3, name = "Set3")[1:2], # Specify a palette with at least 3 colors and select the first 2
-  names.arg = c("Irrelevant", "Relevant"), # Labeling the bars
-  ylim = c(0, max(code_counts) + 1000)
-)
-
-# Add the count number on each bar
-text(x = bar_positions, y = code_counts, label = code_counts, pos = 3, cex = 1, col = "black")
-```
-
-## Plot the word use in relevant tweets
-
-```{r}
-
-hist(
-  tweets$num, 
-  main="The Histgram of The Word Frequency",
-  xlab="The Number of Words",
-  col="#006600"
-  )
-
-```
-
 ## Divide data into three time intervals
 
 ```{r}
-
 # Divide the data into three intervals based on the peak dates
 t1 <- tweets %>% filter(created_at < peak_start)
 t2 <- tweets %>% filter(created_at >= peak_start & created_at <= peak_end)
@@ -250,7 +156,6 @@ t3 <- tweets %>% filter(created_at > peak_end)
 ```
 
 ## Find unique users across three time intervals
-
 
 ```{r}
 # During T2, a sender is defined as someone who sends, replies, quotes, or retweets a tweet. A sender can be viewed as a nominee, who nominates others that they have interacted with before or have been affected by their activities on Twitter.
@@ -272,7 +177,6 @@ common_people <- Reduce(intersect, list(unique_from_interval1, unique_people_int
 # Output the common people
 print(common_people)
 print(length(common_people))
-
 ```
 
 ## Filter the data based on the unique common users
@@ -286,7 +190,6 @@ t3 <- t3 %>% filter(from %in% common_people)
 ## Save edgelist from t1 for KliqueFinder
 
 ```{r}
-
 t1_num_b <- t1 %>%
   dplyr::select(from, to, num_b) %>%
   group_by(from, to) %>%
@@ -299,7 +202,6 @@ save(t1_num_b, file = "t1edge.RData")
 ## Get T2 edgelist
 
 ```{r, warning=FALSE}
-
 t2_num_b <- t2 %>%
   filter(num_b > 0) %>%
   dplyr::select(from, to, num_b) %>%
@@ -309,7 +211,6 @@ t2_num_b <- t2 %>%
 
 print(head(t2_num_b, n = 5))
 table(t2_num_b$weight)
-
 ```
 
 ```{r}
@@ -317,7 +218,6 @@ save(t2_num_b, file = "t2edge.RData")
 ```
 
 ```{r, warning=FALSE}
-
 # Generate all possible pairs of user IDs
 combinations <- expand.grid(from = common_people, to = common_people, stringsAsFactors = FALSE)
 colnames(combinations) <- c("from", "to")
@@ -330,7 +230,6 @@ t2_numB_list$weight[is.na(t2_numB_list$weight)] <- 0
 
 print(head(t2_numB_list, n = 5))
 table(t2_numB_list$weight)
-
 ```
 
 ```{r}
@@ -479,7 +378,6 @@ car::avPlots(mod)
 ## Partial correlation
 
 ```{r}
-
 mod2 <- lm(total3 ~ total1, data = final_data)
 mod3 <- lm(mean_exposure ~ total1, data = final_data)
 
@@ -491,7 +389,7 @@ cor(final_data$R1, final_data$R2)
 
 ## Save final_data
 
-```{}
+```{r}
 save(final_data,file = "final_data.RData")
 write.csv(final_data, "final_data.csv")
 ```

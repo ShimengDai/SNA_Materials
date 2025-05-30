@@ -57,7 +57,6 @@ lang:en"
 #query = "(graduate OR grad) 
          #(student OR assistant OR worker) 
          #(union OR unionization OR wages OR healthcare OR NLRB OR labor OR contract OR strike) 
-         #(-isreal) # if you want to remove tweets contain Isreal
          #(is:retweet OR is:reply OR is:quote OR has:mentions)
          #lang:en"
 ```
