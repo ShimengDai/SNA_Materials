@@ -20,7 +20,7 @@
 
 
 
-[**SNA with Twitter Data**](https://github.com/ShimengDai/SNA_Materials/tree/main/Twitter) [Data Folder](https://github.com/ShimengDai/SNA_Materials/tree/main/Twitter/data)
+[**SNA with Twitter Data**](https://github.com/ShimengDai/SNA_Materials/tree/main/Twitter) [(Data Folder)](https://github.com/ShimengDai/SNA_Materials/tree/main/Twitter/data)
 
 - [Scrape Twitter Data](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Scrape%20Twitter%20Data.Rmd)  
 
