@@ -22,7 +22,7 @@ library(igraph) # used to graph networks
 
 
 # Set working directory of CSV edgelist
-setwd("C:/Users/daishime/Desktop/SNA")
+#setwd("")
 
 # Name of CSV edgelist file
 # REQUIRED Format: sender | receiver | edge_weight

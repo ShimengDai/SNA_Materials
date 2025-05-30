@@ -3,7 +3,7 @@
 library(amen) # Analysis of network and relational data using additive and multiplicative effects (AME) models
 #install.packages("igraph")
 library(igraph)
-setwd("/Users/shimengdai/Dropbox/Michigan State/Github/SNA_Materials/Regular old")
+#setwd("")
 
 # Load edge list: each row is sendr, receiver, and weight
 edgelist <- read.csv("toynet.csv", header=T, as.is=T)

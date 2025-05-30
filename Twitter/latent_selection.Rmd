@@ -1,8 +1,15 @@
 ---
 title: "Latent Factor Selection Model"
-output: html_document
-date: "2024-05-08"
-author: Shimeng Dai 
+author: "Shimeng Dai"
+date: "`r format(Sys.time(), '%Y-%m-%d, %H:%M:%S %Z')`"
+ 
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
 ---
 
 ## Load required libraries
@@ -19,7 +26,7 @@ library(amen)
 ## Load the required dataset
 
 ```{r}
-setwd("/Users/shimengdai/Dropbox/Michigan State/Eighth semester/SNA_Materials/2024 SNA workshop/data")
+setwd("data")
 
 load("tweets.RData")
 ```

@@ -13,7 +13,7 @@ library(latentnet)   # For latent space network models
 library(igraph)      # General network analysis
 
 
-setwd("/Users/shimengdai/Dropbox/Michigan State/Github/SNA_Materials/Regular")
+#setwd("")
 
 #Read data - assuming data are in current working directory
 Toyatt <- read.csv("Toyatt.csv")  # Node attributes

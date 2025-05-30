@@ -22,7 +22,7 @@ output:
 library(amen) # Analysis of network and relational data using additive and multiplicative effects (AME) models
 #install.packages("igraph")
 library(igraph)
-setwd("/Users/shimengdai/Dropbox/Michigan State/Github/SNA_Materials/Regular old")
+
 
 ```
 

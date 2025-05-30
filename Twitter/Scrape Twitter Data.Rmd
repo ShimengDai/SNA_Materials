@@ -1,10 +1,15 @@
 ---
 title: "Scrape Twitter Data"
 author: "Shimeng Dai"
-date: "2024-05-08"
-output:
-  html_document: default
-  pdf_document: default
+date: "`r format(Sys.time(), '%Y-%m-%d, %H:%M:%S %Z')`"
+ 
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
 ---
 
 ## Load required library
@@ -35,6 +40,7 @@ headers <- c(`Authorization` = sprintf('Bearer %s', bearer_token))
 
 ```{r}
 
+# example query 
 query <- "
 (standardized test OR SAT OR ACT)
 (admission OR admit OR application OR applicant OR grade) 
@@ -44,7 +50,18 @@ lang:en"
 
 # (- elementary) # If you want to avoid some keywords, such as "elementary", you can add (- elementary) to your query
 
+
+# query used to scape the Twitter dataset for application 
+
+
+#query = "(graduate OR grad) 
+         #(student OR assistant OR worker) 
+         #(union OR unionization OR wages OR healthcare OR NLRB OR labor OR contract OR strike) 
+         #(-isreal) # if you want to remove tweets contain Isreal
+         #(is:retweet OR is:reply OR is:quote OR has:mentions)
+         #lang:en"
 ```
+
 
 ## Count tweets using the query
 
@@ -134,41 +151,11 @@ all_tweets <- bind_rows(all_tweets, pull_data) %>%
 
 ```
 
-## Remove irrelevant tweets if needed
-
-```{r}
-df <- all_tweets
-# Preprocess the text: convert to lowercase and remove punctuation
-df$text_cleaned <- tolower(df$text)
-df$text_cleaned <- str_replace_all(df$text_cleaned, "[[:punct:]]", "") # removes punctuation
-
-# Define and preprocess the strings to remove
-# Incude tweets that you would like to remove from the dataset
-
-raw_strings_to_remove <- c(
-  "high school ??? had to practice act &amp; psat every summer til 11th grade"
-)
-
-strings_to_remove <- sapply(raw_strings_to_remove, function(x) {
-  x <- tolower(x)
-  str_replace_all(x, "[[:punct:]]", "") # more consistent punctuation removal
-})
-
-# Filter the data by checking for non-presence of each string to remove
-for (string in strings_to_remove) {
-  df <- df[!grepl(pattern = string, df$text_cleaned, fixed = TRUE), ]
-}
-
-# Check the resulting filtered data
-nrow(df)
-nrow(all_tweets)
-```
-
 ## Keyword search
 
 ```{r}
 # Keyword data
-word <- read.csv("keyword.csv")
+word <- read.csv("data/Dictionary.csv")
 word <- as.data.frame(word)
 
 # Exclude URL patterns in Text
@@ -219,6 +206,6 @@ print(head(df, 2))
 ```{r}
 # all_tweets is the original scraped data
 
-save(all_tweets, df, file="all_tweets.Rdata")
+#save(all_tweets, df, file="all_tweets.Rdata")
 
 ```

@@ -1,8 +1,15 @@
 ---
 title: "The Influence Model with Twitter Data"
-output: html_document
-date: "2024-05-08"
-author: Shimeng Dai 
+author: "Shimeng Dai"
+date: "`r format(Sys.time(), '%Y-%m-%d, %H:%M:%S %Z')`"
+ 
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
 ---
 
 
@@ -33,7 +40,7 @@ library(RColorBrewer)
 
 # Time frame of the data: from late January to late April
 
-setwd("/Users/shimengdai/Dropbox/Michigan State/Eighth semester/SNA_Materials/2024 SNA workshop/data")
+setwd("data")
 
 # Twitter network data
 load("edgelist.RData")

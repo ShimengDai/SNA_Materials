@@ -1,0 +1,3 @@
+load("/Users/shimengdai/Dropbox/Michigan State/Github/SNA_Materials/Twitter/data/all_nodes.RData")
+load("/Users/shimengdai/Dropbox/Michigan State/Github/SNA_Materials/Twitter/data/all_nodes.RData")
+load("/Users/shimengdai/Dropbox/Michigan State/Github/SNA_Materials/Twitter/data/all_tweets.RData")

@@ -1,8 +1,15 @@
 ---
 title: "Kliqfinr Twitter"
-output: html_document
-author: Shimeng Dai 
-date: "2024-05-07"
+author: "Shimeng Dai"
+date: "`r format(Sys.time(), '%Y-%m-%d, %H:%M:%S %Z')`"
+ 
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+    number_sections: true
+    df_print: paged
 ---
 
 ## Set working directory 

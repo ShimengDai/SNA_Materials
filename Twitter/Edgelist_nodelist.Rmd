@@ -1,6 +1,6 @@
 ---
 title: "Edgelist_nodelist"
-author: "Nicole Jess, Yuqing Liu"
+author: "Nicole Jess, Yuqing Liu, & Shimeng Dai"
 date: "`r format(Sys.time(), '%Y-%m-%d, %H:%M:%S %Z')`"
 output: 
   bookdown::html_document2:
@@ -32,17 +32,17 @@ library(igraph)             # for graph_from_data_frame()
 
 # Load data and insert your bearer_token
 
-```{}
+```{r}
 
-bearer_token <- ""
+#bearer_token <- ""
 
 
 ```
 
 ```{r}
-setwd("/Users/shimengdai/Dropbox/Michigan State/Eighth semester/SNA_Materials/2024 SNA workshop/data")
+setwd("data")
 
-load("all_tweets.RData")
+load("all_tweets.RData") # union topic 
 ```
 
 # Edgelist
