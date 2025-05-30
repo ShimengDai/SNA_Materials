@@ -40,7 +40,7 @@ headers <- c(`Authorization` = sprintf('Bearer %s', bearer_token))
 
 ```{r}
 
-# example query 
+# Example query 1
 query <- "
 (standardized test OR SAT OR ACT)
 (admission OR admit OR application OR applicant OR grade) 
@@ -50,10 +50,9 @@ lang:en"
 
 # (- elementary) # If you want to avoid some keywords, such as "elementary", you can add (- elementary) to your query
 
-
 # query used to scape the Twitter dataset for application 
 
-
+# Example query 2
 #query = "(graduate OR grad) 
          #(student OR assistant OR worker) 
          #(union OR unionization OR wages OR healthcare OR NLRB OR labor OR contract OR strike) 
