@@ -86,7 +86,6 @@ print(sum(count_data$tweet_count))
 
 ```{r}
 
-
 ggplot(data = count_data,
        aes(x=as.Date(end), y=tweet_count, group=1)) +
   geom_line() +

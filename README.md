@@ -3,7 +3,7 @@
 
 [**SNA with Toy Data**](https://github.com/ShimengDai/SNA_Materials/tree/main/Regular)  [(toyatt.csv](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/toyatt.csv), [toynet.csv)](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/toynet.csv)
 
-- [Kliquefinder](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/Kliquefinder.R)  
+- [Kliquefinder] [R](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/Influence.R), [R Markdown](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/Influence.Rmd)
 
 - [Influence Model](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/influence.R)  
 
@@ -13,7 +13,7 @@
 
 - [Influence Model (SPSS)](https://github.com/ShimengDai/SNA_Materials/tree/main/SPSS) 
 
-- [Influence Model (Strata)](https://github.com/ShimengDai/SNA_Materials/tree/main/stata) 
+- [Influence Model (Stata)](https://github.com/ShimengDai/SNA_Materials/tree/main/stata) 
 
 
 
