@@ -7,7 +7,7 @@
 
 - Influence Model [(R](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/Influence.R), [R Markdown)](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/Influence.Rmd)
 
-- Latent Influence Model [(R](https://github.com/ShimengDai/SNA_Materials/blob/main/Latent%20Influence.R), [R Markdown)](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/Latent%20Influence.Rmd)
+- Latent Influence Model [(R](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/latent%20Influence.R), [R Markdown)](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/Latent%20Influence.Rmd)
 
 - [Latent Selection Model](https://github.com/ShimengDai/SNA_Materials/blob/main/Regular/latent%20factor%20selection%20just%20code.R) 
 
