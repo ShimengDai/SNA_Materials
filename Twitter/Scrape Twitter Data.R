@@ -1,0 +1,180 @@
+# "Scrape Twitter Data"
+
+## Load required library
+
+library(httr)
+library(jsonlite)
+library(dplyr)
+library(ggplot2)
+library(purrr)
+library(stringr)
+library(lubridate)
+
+
+## Input bearer token
+
+# Directly setting the Bearer Token within the script
+bearer_token <- ""
+
+# Set up authentication
+headers <- c(`Authorization` = sprintf('Bearer %s', bearer_token))
+
+
+## Define a query
+
+
+# Example query 1
+query <- "
+(standardized test OR SAT OR ACT)
+(admission OR admit OR application OR applicant OR grade) 
+(college OR university OR academic OR reinstate OR school OR ivy league OR requiring OR requirement)
+(is:retweet OR is:reply OR is:quote OR has:mentions)
+lang:en"
+
+# (- elementary) # If you want to avoid some keywords, such as "elementary", you can add (- elementary) to your query
+
+# query used to scape the Twitter dataset for application 
+
+# Example query 2
+#query = "(graduate OR grad) 
+#(student OR assistant OR worker) 
+#(union OR unionization OR wages OR healthcare OR NLRB OR labor OR contract OR strike) 
+#(is:retweet OR is:reply OR is:quote OR has:mentions)
+#lang:en"
+
+
+## Count tweets using the query
+
+
+# not include certain keywords
+
+params_count <- list(`query` = query, `granularity` = 'day')
+
+count <- httr::GET(url = 'https://api.twitter.com/2/tweets/counts/recent',
+                   httr::add_headers(.headers=headers),
+                   query = params_count)
+
+count_data <- httr::content(count,
+                            as = 'parsed',
+                            type = 'application/json',
+                            simplifyDataFrame = TRUE) %>% pluck("data")
+
+print(sum(count_data$tweet_count))
+
+
+## Visualize the count of tweets
+
+ggplot(data = count_data,
+       aes(x=as.Date(end), y=tweet_count, group=1)) +
+  geom_line() +
+  labs(x="Date", y="number of tweets") +
+  scale_x_date(date_breaks = "1 day", date_labels = "%m-%d-%Y") +
+  theme_classic()
+
+
+print(count_data)
+
+## Pagination is used to scrape tweets
+
+# pagination
+
+# Parameters for pulling tweets
+params_pull <- list(`query` = query,
+                    `max_results` = '100',
+                    `tweet.fields` = 'author_id,conversation_id,created_at,entities,geo,id,in_reply_to_user_id,public_metrics,text',
+                    `user.fields` = 'created_at,description,entities,id,location,name,public_metrics,username,verified',
+                    `expansions` = 'author_id,entities.mentions.username,in_reply_to_user_id,referenced_tweets.id.author_id',
+                    `next_token` = NULL)
+
+# Pull tweets - Initial request
+response <- httr::GET(url = 'https://api.twitter.com/2/tweets/search/recent',
+                      httr::add_headers(.headers = headers),
+                      query = params_pull)
+
+content <- httr::content(response, as = 'parsed', type = 'application/json', simplifyDataFrame = TRUE)
+pull_data <- if (!is.null(content$data)) pluck(content, "data") else data.frame()
+token <- content$meta$next_token
+
+# Pagination loop for additional data
+while (!is.null(token)) {
+  params_pull$next_token <- token
+  
+  response <- httr::GET(url = 'https://api.twitter.com/2/tweets/search/recent',
+                        httr::add_headers(.headers = headers),
+                        query = params_pull)
+  
+  content <- httr::content(response, as = 'parsed', type = 'application/json', simplifyDataFrame = TRUE)
+  
+  if (!is.null(content$data)) {
+    new_data <- pluck(content, "data")
+    pull_data <- bind_rows(pull_data, new_data)
+  }
+  
+  token <- content$meta$next_token
+}
+
+# Assuming all_tweets is previously defined or starting fresh
+if (!exists("all_tweets")) {
+  all_tweets <- data.frame()
+}
+
+all_tweets <- bind_rows(all_tweets, pull_data) %>%
+  distinct()
+
+## Keyword search
+
+```{r}
+# Keyword data
+word <- read.csv("data/Dictionary.csv")
+word <- as.data.frame(word)
+
+# Exclude URL patterns in Text
+df$text <- gsub("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", "" ,df$text)
+
+# Exclude @user patterns in Text
+df$text <- gsub("@\\w+", "" ,df$text)
+
+# Exclude hashtags patterns in Text
+df$text <- gsub("#", "" ,df$text)
+
+
+find_keywords <- function(text, keywords){
+  text <- tolower(text)
+  count <- 0
+  for (ch in keywords) {
+    if (grepl(ch, text)){
+      
+      if (ch != ""){
+        count <- count + 1
+      }
+    }
+  }
+  return(count)
+}
+
+
+word <- tolower(word$keyword)
+
+# num = the number of keywords found in a tweet
+df$num <- lapply(df$text, FUN = find_keywords, keywords = word)
+
+# num_b = a binary variable
+# if num_b = 0, a tweet does not contain any key words
+# if num_B = 1, a tweet contains at least one key word
+df$num_b  <- ifelse(df$num  > 0, 1, 0)
+df$num <- as.numeric(df$num)
+
+
+colnames(df)
+
+print(head(df, 2))
+
+## Save data
+
+
+# all_tweets is the original scraped data
+
+#save(all_tweets, df, file="all_tweets.Rdata")
+
+
+
