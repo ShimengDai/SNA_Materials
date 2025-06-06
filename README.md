@@ -20,17 +20,17 @@
 
 [**SNA with Twitter Data**](https://github.com/ShimengDai/SNA_Materials/tree/main/Twitter) [(Data Folder)](https://github.com/ShimengDai/SNA_Materials/tree/main/Twitter/data)
 
-- Scrape Twitter Data [(R](), [R Markdown)](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Scrape%20Twitter%20Data.Rmd)
+- Scrape Twitter Data [(R](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Scrape%20Twitter%20Data.R), [R Markdown)](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Scrape%20Twitter%20Data.Rmd)
  
-- Edgelist & Nodelist [(R](), [R Markdown)](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Edgelist_nodelist.Rmd)
+- Edgelist & Nodelist [(R](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Edgelist_nodelist.R), [R Markdown)](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Edgelist_nodelist.Rmd)
 
-- Kliquefinder [(R](), [R Markdown)](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Kliqfinr%20Twitter.Rmd)
+- Kliquefinder [(R](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Kliqfinr%20Twitter.R), [R Markdown)](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Kliqfinr%20Twitter.Rmd)
 
-- Influence Model [(R](), [R Markdown)](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/The%20Influence%20Model.Rmd)
+- Influence Model [(R](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/The%20Influence%20Model.R), [R Markdown)](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/The%20Influence%20Model.Rmd)
   
-- Latent Influence Model [(R](), [R Markdown)](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Latent_Factor_Influence.Rmd)
+- Latent Influence Model [(R](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Latent_Factor_Influence.R), [R Markdown)](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Latent_Factor_Influence.Rmd)
 
-- Latent Selection Model [(R](), [R Markdown)](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/latent_selection.Rmd)
+- Latent Selection Model [(R](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/Latent_selection.R), [R Markdown)](https://github.com/ShimengDai/SNA_Materials/blob/main/Twitter/latent_selection.Rmd)
 
 
 **Miscellaneous**
