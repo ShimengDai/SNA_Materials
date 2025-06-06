@@ -1,0 +1,337 @@
+# "The Influence Model with Twitter Data"
+
+
+
+
+## Load required libraries
+
+library(tidyverse)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(lubridate)
+library(RColorBrewer)
+
+
+## Load required datasets (tweets and keywords)
+
+# The data was scraped using the following keywords:
+# query = "((graduate OR grad) 
+# (student OR assistant OR worker) 
+# (union OR unionization OR wages OR healthcare OR NLRB OR labor OR contract OR strike) 
+# (-XX)) # if you want to remove tweets contain XX
+# (is:retweet OR is:reply OR is:quote OR has:mentions)
+# lang:en"
+
+# Time frame of the data: from late January to late April
+
+setwd("data")
+
+# Twitter network data
+load("edgelist.RData")
+df <- edgelist
+
+# Dictionary data 
+# Use to identify if a tweet contains specific words
+# You need to identify your own dictionary data for your specific topic
+word <- read.csv("Dictionary.csv") 
+word <- as.data.frame(word)
+head(word, n = 5)
+
+## Plot the tweet frequency over time 
+## Divide the time period into three time intervals
+
+# Convert created_at to Date object
+tweets <- df
+tweets$created_at <- as.Date(tweets$created_at)
+
+# Aggregate tweets by date
+daily_tweets <- aggregate(tweet_id ~ created_at, data = tweets, FUN = length)
+
+# Rename the columns for clarity
+colnames(daily_tweets) <- c("Date", "Number_of_Tweets")
+
+
+# Find the maximum number of tweets for setting limits
+max_tweets <- max(daily_tweets$Number_of_Tweets)
+
+
+daily_tweets$Date <- ymd(daily_tweets$Date)
+
+# Define peak periods
+peak_start <- ymd("2024-04-02")
+peak_end <- ymd("2024-04-10")
+
+# Create the plot
+ggplot(daily_tweets, aes(x = Date, y = Number_of_Tweets)) +
+  geom_line() +
+  scale_x_date(date_breaks = "3 days", date_labels = "%b %d") +
+  scale_y_continuous(breaks = seq(0, max(daily_tweets$Number_of_Tweets, na.rm = TRUE), by = 500)) + # Adjust 'by' as needed
+  geom_vline(xintercept = as.numeric(peak_start), linetype = "dashed", color = "red") +
+  geom_vline(xintercept = as.numeric(peak_end), linetype = "dashed", color = "blue") +
+  theme_minimal() +
+  labs(title = "Number of Tweets Over Time", x = "Date", y = "Number of Tweets") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Adjust text angle for better visibility
+
+## Tweet preprocessing 
+## Keyword searching method
+
+
+# Exclude URL patterns in Text
+tweets$text <- gsub("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", "" ,tweets$text)
+
+# Exclude @user patterns in Text
+tweets$text <- gsub("@\\w+", "" ,tweets$text)
+#tweets$text <- gsub("\\w+", "" ,tweets$text)
+
+
+# Exclude hashtags patterns in Text
+tweets$text <- gsub("#", "" ,tweets$text)
+
+
+
+find_keywords <- function(text, keywords){
+  text <- tolower(text)
+  count <- 0
+  for (ch in keywords) {
+    if (grepl(ch, text)){
+      
+      if (ch != ""){
+        count <- count + 1
+      }
+    }
+  }
+  return(count)
+}
+#qqq
+word <- tolower(word$keyword)
+
+# The number of keywords found in each tweet
+
+tweets$num <- lapply(tweets$text, FUN = find_keywords, keywords = word)
+
+# A binary variable represents whether a tweet contains at least one keyword
+tweets$num_b  <- ifelse(tweets$num  > 0, 1, 0)
+
+tweets$num <- as.numeric(tweets$num)
+
+head(tweets, n = 5)
+
+
+
+## Save tweets as R data
+
+save(tweets,file = "tweets.RData")
+
+## Divide data into three time intervals
+
+# Divide the data into three intervals based on the peak dates
+t1 <- tweets %>% filter(created_at < peak_start)
+t2 <- tweets %>% filter(created_at >= peak_start & created_at <= peak_end)
+t3 <- tweets %>% filter(created_at > peak_end)
+
+## Find unique users across three time intervals
+
+
+# During T2, a sender is defined as someone who sends, replies, quotes, or retweets a tweet. A sender can be viewed as a nominee, who nominates others that they have interacted with before or have been affected by their activities on Twitter.
+
+# Find senders during T1 
+unique_from_interval1 <- unique(t1$from)
+
+# Final senders and receivers during T2
+unique_from_interval2 <- unique(t2$from)
+unique_to_interval2 <- unique(t2$to)
+unique_people_interval2 <- union(unique_from_interval2, unique_to_interval2)
+
+# Find senders during T3
+unique_from_interval3 <- unique(t3$from)
+
+# Find the intersection of the unique lists from each interval
+common_people <- Reduce(intersect, list(unique_from_interval1, unique_people_interval2, unique_from_interval3))
+
+# Output the common people
+print(common_people)
+print(length(common_people))
+
+## Filter the data based on the unique common users
+
+t1 <- t1 %>% filter(from %in% common_people)
+t2 <- t2 %>% filter(from %in% common_people) %>% filter(to %in% common_people)
+t3 <- t3 %>% filter(from %in% common_people)
+
+
+## Save edgelist from t1 for KliqueFinder
+
+
+t1_num_b <- t1 %>%
+  dplyr::select(from, to, num_b) %>%
+  group_by(from, to) %>%
+  summarise(weight = sum(num_b)) %>%
+  filter(from != to)
+
+save(t1_num_b, file = "t1edge.RData")
+
+## Get T2 edgelist
+
+t2_num_b <- t2 %>%
+  filter(num_b > 0) %>%
+  dplyr::select(from, to, num_b) %>%
+  group_by(from, to) %>%
+  summarise(weight = sum(num_b)) %>%
+  filter(from != to)
+
+print(head(t2_num_b, n = 5))
+table(t2_num_b$weight)
+
+save(t2_num_b, file = "t2edge.RData")
+
+# Generate all possible pairs of user IDs
+combinations <- expand.grid(from = common_people, to = common_people, stringsAsFactors = FALSE)
+colnames(combinations) <- c("from", "to")
+
+# Filter out self-loops (where from and to are the same)
+combinations <- subset(combinations, from != to)
+
+t2_numB_list <- merge(combinations, t2_num_b, by = c("from", "to"), all.x = TRUE)
+t2_numB_list$weight[is.na(t2_numB_list$weight)] <- 0
+
+print(head(t2_numB_list, n = 5))
+table(t2_numB_list$weight)
+
+save(t2_numB_list, file = "t2edge_full.RData")
+
+
+## Save tweets
+
+save(tweets,file = "tweets.RData")
+write.csv(tweets, "tweets.csv")
+
+
+## Get T1 and T3 word use
+
+
+# Nominee attribute (word use) T1 
+# Nominee is "to" in T2 edgelist
+T1 <- t1 %>%  
+  dplyr::select(from,tweet_id, created_at,text, num) %>% 
+  group_by(from) %>% 
+  summarise(total1 = sum(num)) 
+
+t1.tweets <- T1 %>%
+  rename(to = from)  
+
+# Nominator attribute (word use) T3
+# Nominator is "from" in T2 edgelist
+T3 <- t3 %>%  
+  dplyr::select(from,tweet_id, created_at,text, num)%>% 
+  group_by(from) %>% 
+  summarise(total3 = sum(num))
+
+t3.tweets <- T3
+
+## Calculate exposure term
+
+data <- t2_numB_list %>% 
+  dplyr::left_join(t1.tweets, by = 'to') # attach nominee attribute to T2 edgelist 
+
+sum(is.na(data)) # The merged dataset should not contain NAs. 
+
+
+# attach nominator attribute to T2 edgelist
+data <- t2_numB_list %>% 
+  dplyr::left_join(t1.tweets, by = 'to')  
+
+# Calculate exposure term for each interaction
+data$exposure <- data$weight * data$total1
+
+# Calculate the mean exposure term for each user 
+exposure <-
+  data %>% 
+  group_by(from) %>%
+  summarize(mean_exposure = mean(exposure))
+
+
+## Combine datasets
+
+
+t1.tweets <- t1.tweets %>% # rename receiver as sender to merge these
+  rename("from" = "to")
+
+final_data <- dplyr::left_join(t1.tweets, exposure, by = "from")
+
+final_data <- dplyr::left_join(final_data, t3.tweets, by = "from") 
+
+sum(is.na(final_data)) # Check NAs in final_data. The final_data should not contain NAs.
+
+
+## Visualize issue use during T1 and T3
+
+
+# Word use during T1
+hist(final_data$total1,
+     main="Word Use (T1)",
+     xlab="The Number of Words",
+     col="#006600"
+)
+# Word use during T3
+hist(final_data$total3,
+     main="Word Use (T3)",
+     xlab="The Number of Words",
+     col="#006600"
+)
+
+
+## Visualize exposure term 
+
+# mean exposure term 
+hist(
+  final_data$mean_exposure,
+  main="Mean Exposure (T2)",
+  xlab="Mean Exposure",
+  col="#006600"
+)
+
+
+# log mean exposure term 
+hist(
+  log(final_data$mean_exposure),
+  main="Log Mean Exposure (T2)",
+  xlab="Log Mean Exposure",
+  col="#006600"
+)
+
+## The influence model
+
+mod <- lm(total3 ~ total1 + mean_exposure, data = final_data)
+
+summary(mod)
+
+
+## Partial plot
+
+
+car::avPlots(mod)
+
+
+## Partial correlation
+
+
+mod2 <- lm(total3 ~ total1, data = final_data)
+mod3 <- lm(mean_exposure ~ total1, data = final_data)
+
+final_data$R1 <- mod2$residuals
+final_data$R2 <- mod3$residuals
+
+cor(final_data$R1, final_data$R2)
+
+## Save final_data
+
+
+save(final_data,file = "final_data.RData")
+write.csv(final_data, "final_data.csv")
+
+
+
+
+
+
